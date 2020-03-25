@@ -108,11 +108,19 @@ public class FavouriteActivity extends AppCompatActivity implements FavouriteAda
     }
 
     @Override
-    public void unfavouriteButton(Book book, int position)
+    public void unfavouriteButton(Book book)
     {
         viewModel.deleteAFavourite(book);
         //DebugLogger.logDebug("1: "+favouriteBooks.size());
-        favouriteBooks.remove(position);
+        //FavouriteBook favouriteBook = new FavouriteBook(book.getId());
+
+        for (int i=0; i<favouriteBooks.size(); i++)
+        {
+            if(favouriteBooks.get(i).getId().equals(book.getId())){
+                favouriteBooks.remove(i);
+                break;
+            }
+        }
         //DebugLogger.logDebug("2: "+favouriteBooks.size());
 
         books.clear();

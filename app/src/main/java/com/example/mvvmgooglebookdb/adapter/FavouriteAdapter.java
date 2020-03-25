@@ -32,7 +32,7 @@ public class FavouriteAdapter extends RecyclerView.Adapter<FavouriteAdapter.Favo
     }
 
     public interface UserClickListener {
-        void unfavouriteButton(Book book, int position);
+        void unfavouriteButton(Book book);
     }
 
     @NonNull
@@ -64,7 +64,7 @@ public class FavouriteAdapter extends RecyclerView.Adapter<FavouriteAdapter.Favo
                 .placeholder(R.drawable.ic_broken_image_black_24dp)
                 .into(holder.thumbNailView);
         holder.unfavouriteButton.setOnClickListener(view ->
-                userClickListener.unfavouriteButton(books.get(position),position));
+                userClickListener.unfavouriteButton(books.get(position)));
     }
 
     @Override
