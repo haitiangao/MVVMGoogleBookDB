@@ -1,0 +1,2 @@
+rootProject.name='MVVMGoogleBookDB'
+include ':app'
