@@ -37,6 +37,8 @@ public class FavouriteActivity extends AppCompatActivity implements FavouriteAda
     @BindView(R.id.favouriteListRecycler)
     RecyclerView favouriteListRecycler;
 
+    private int x=0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,18 +54,33 @@ public class FavouriteActivity extends AppCompatActivity implements FavouriteAda
         favouriteListRecycler.setAdapter(new FavouriteAdapter(books, this, this));
         favouriteListRecycler.addItemDecoration(itemDecoration);
 
+        favouriteBooks.addAll(viewModel.getAllFavourites());
         findAllFavourite();
 
     }
 
     private void findAllFavourite(){
-        favouriteBooks.clear();
-        books.clear();
-        favouriteBooks.addAll(viewModel.getAllFavourites());
-        favouriteListRecycler.setAdapter(null);
-        favouriteAdapter = new FavouriteAdapter(books, this, this);
-        favouriteAdapter.notifyDataSetChanged();
+        if(favouriteBooks.size()>0) {
+            for (int i = 0; i < favouriteBooks.size(); i++) {
+                compositeDisposable.add(viewModel.getSpecificBookRx(favouriteBooks.get(i).getId()).subscribe(bookResult -> {
 
+                    books.add(bookResult);
+                    favouriteListRecycler.setAdapter(null);
+                    favouriteAdapter = new FavouriteAdapter(books, this, this);
+                    favouriteListRecycler.setAdapter(favouriteAdapter);
+                    favouriteAdapter.notifyDataSetChanged();
+
+                }, throwable -> {
+                    DebugLogger.logError(throwable);
+
+                }));
+            }
+        }
+
+    }
+
+    private void getNewFavourites(List<FavouriteBook> favouriteBooks){
+        favouriteListRecycler.setAdapter(null);
 
         if(favouriteBooks.size()>0) {
             for (int i = 0; i < favouriteBooks.size(); i++) {
@@ -91,12 +108,15 @@ public class FavouriteActivity extends AppCompatActivity implements FavouriteAda
     }
 
     @Override
-    public void unfavouriteButton(Book book)
+    public void unfavouriteButton(Book book, int position)
     {
         viewModel.deleteAFavourite(book);
-        favouriteBooks.clear();
+        //DebugLogger.logDebug("1: "+favouriteBooks.size());
+        favouriteBooks.remove(position);
+        //DebugLogger.logDebug("2: "+favouriteBooks.size());
+
         books.clear();
-        findAllFavourite();
+        getNewFavourites(favouriteBooks);
     }
 
     @Override
